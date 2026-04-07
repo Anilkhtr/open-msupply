@@ -1538,6 +1538,7 @@ export type CreateInventoryAdjustmentError = {
 export type CreateInventoryAdjustmentInput = {
   adjustment: Scalars['Float']['input'];
   adjustmentType: AdjustmentTypeInput;
+  backdatedDatetime?: InputMaybe<Scalars['DateTime']['input']>;
   /** @deprecated Since 2.8.0. Use reason_option_id */
   inventoryAdjustmentReasonId?: InputMaybe<Scalars['String']['input']>;
   reasonOptionId?: InputMaybe<Scalars['String']['input']>;
@@ -6743,6 +6744,7 @@ export type PreferenceDescriptionNode = {
 
 export enum PreferenceKey {
   AdjustForNumberOfDaysOutOfStock = 'adjustForNumberOfDaysOutOfStock',
+  AllowBackdatingOfInventoryAdjustments = 'allowBackdatingOfInventoryAdjustments',
   AllowBackdatingOfShipments = 'allowBackdatingOfShipments',
   AllowTrackingOfStockByDonor = 'allowTrackingOfStockByDonor',
   AuthorisePurchaseOrder = 'authorisePurchaseOrder',
@@ -6812,6 +6814,7 @@ export enum PreferenceValueNodeType {
 export type PreferencesNode = {
   __typename: 'PreferencesNode';
   adjustForNumberOfDaysOutOfStock: Scalars['Boolean']['output'];
+  allowBackdatingOfInventoryAdjustments: Scalars['Boolean']['output'];
   allowBackdatingOfShipments: Scalars['Boolean']['output'];
   allowTrackingOfStockByDonor: Scalars['Boolean']['output'];
   authorisePurchaseOrder: Scalars['Boolean']['output'];
@@ -11138,6 +11141,9 @@ export type UpsertPackVariantResponse =
 
 export type UpsertPreferencesInput = {
   adjustForNumberOfDaysOutOfStock?: InputMaybe<Scalars['Boolean']['input']>;
+  allowBackdatingOfInventoryAdjustments?: InputMaybe<
+    Scalars['Boolean']['input']
+  >;
   allowBackdatingOfShipments?: InputMaybe<Scalars['Boolean']['input']>;
   allowTrackingOfStockByDonor?: InputMaybe<Scalars['Boolean']['input']>;
   authorisePurchaseOrder?: InputMaybe<Scalars['Boolean']['input']>;

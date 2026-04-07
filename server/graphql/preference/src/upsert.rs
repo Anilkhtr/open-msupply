@@ -67,6 +67,7 @@ pub struct UpsertPreferencesInput {
     pub global_table_configs: Option<serde_json::Value>,
     pub allow_backdating_of_shipments: Option<bool>,
     pub maximum_backdating_days: Option<i32>,
+    pub allow_backdating_of_inventory_adjustments: Option<bool>,
 
     // Store preferences
     pub manage_vaccines_in_doses: Option<Vec<BoolStorePrefInput>>,
@@ -139,6 +140,7 @@ impl UpsertPreferencesInput {
             global_table_configs,
             allow_backdating_of_shipments,
             maximum_backdating_days,
+            allow_backdating_of_inventory_adjustments,
             // Store preferences
             manage_vaccines_in_doses,
             manage_vvm_status_for_stock,
@@ -187,6 +189,7 @@ impl UpsertPreferencesInput {
             global_table_configs: global_table_configs.clone(),
             allow_backdating_of_shipments: *allow_backdating_of_shipments,
             maximum_backdating_days: *maximum_backdating_days,
+            allow_backdating_of_inventory_adjustments: *allow_backdating_of_inventory_adjustments,
             // Store preferences
             manage_vaccines_in_doses: manage_vaccines_in_doses
                 .as_ref()

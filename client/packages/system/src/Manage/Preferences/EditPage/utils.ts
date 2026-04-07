@@ -16,14 +16,20 @@ export const PREFERENCE_GROUP_CONFIG: Partial<
   ],
   'label.backdating': [
     PreferenceKey.AllowBackdatingOfShipments,
+    PreferenceKey.AllowBackdatingOfInventoryAdjustments,
     PreferenceKey.MaximumBackdatingDays,
   ],
 };
 
-// Map of preferences that depend on another preference being truthy to be editable (no server side validation, just a UI hint)
-const PREFERENCE_DEPENDENCIES: Partial<Record<PreferenceKey, PreferenceKey>> = {
-  [PreferenceKey.MaximumBackdatingDays]:
+// Map of preferences that depend on at least one of the listed preferences being
+// truthy to be editable (OR logic). No server side validation, just a UI hint.
+const PREFERENCE_DEPENDENCIES: Partial<
+  Record<PreferenceKey, PreferenceKey[]>
+> = {
+  [PreferenceKey.MaximumBackdatingDays]: [
     PreferenceKey.AllowBackdatingOfShipments,
+    PreferenceKey.AllowBackdatingOfInventoryAdjustments,
+  ],
 };
 
 export const isPreferenceDisabledByDependency = (
@@ -33,8 +39,11 @@ export const isPreferenceDisabledByDependency = (
   const dependsOn = PREFERENCE_DEPENDENCIES[key];
   if (!dependsOn) return false;
 
-  const parent = preferences.find(p => p.key === dependsOn);
-  return !parent?.value;
+  // Enabled if ANY parent is truthy
+  return !dependsOn.some(parentKey => {
+    const parent = preferences.find(p => p.key === parentKey);
+    return !!parent?.value;
+  });
 };
 
 export const isAnyAmcPrefOn = (

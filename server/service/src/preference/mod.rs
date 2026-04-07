@@ -44,6 +44,7 @@ pub trait PreferenceServiceTrait: Sync + Send {
             global_table_configs: _, // Not included in preference descriptions UI
             allow_backdating_of_shipments,
             maximum_backdating_days,
+            allow_backdating_of_inventory_adjustments,
 
             // Store preferences
             manage_vaccines_in_doses,
@@ -98,6 +99,7 @@ pub trait PreferenceServiceTrait: Sync + Send {
         append_if_type(is_gaps, &mut prefs, &input)?;
         append_if_type(display_population_based_forecasting, &mut prefs, &input)?;
         append_if_type(allow_backdating_of_shipments, &mut prefs, &input)?;
+        append_if_type(allow_backdating_of_inventory_adjustments, &mut prefs, &input)?;
         append_if_type(maximum_backdating_days, &mut prefs, &input)?;
 
         // Store preferences

@@ -2794,5 +2794,6 @@
   "warning.manual-store-requisition": "Entering a requisition for this store may result in duplicates if the store also submits an Internal Order.",
   "warning.nothing-to-supply": "Nothing left to supply!",
   "warning.requested-exceeds-suggested": "Your requested quantity is higher than the suggested",
-  "label.backdating": "Backdating"
+  "label.backdating": "Backdating",
+  "preference.allowBackdatingOfInventoryAdjustments": "Allow entry of inventory adjustment date"
 }

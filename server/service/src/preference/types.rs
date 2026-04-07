@@ -31,6 +31,7 @@ pub enum PrefKey {
     GlobalTableConfigs,
     AllowBackdatingOfShipments,
     MaximumBackdatingDays,
+    AllowBackdatingOfInventoryAdjustments,
 
     // Store preferences
     ManageVaccinesInDoses,

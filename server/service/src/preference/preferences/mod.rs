@@ -74,6 +74,8 @@ pub mod allow_backdating_of_shipments;
 pub use allow_backdating_of_shipments::*;
 pub mod maximum_backdating_days;
 pub use maximum_backdating_days::*;
+pub mod allow_backdating_of_inventory_adjustments;
+pub use allow_backdating_of_inventory_adjustments::*;
 
 pub struct PreferenceProvider {
     // Global preferences
@@ -95,6 +97,7 @@ pub struct PreferenceProvider {
     pub global_table_configs: GlobalTableConfigs,
     pub allow_backdating_of_shipments: AllowBackdatingOfShipments,
     pub maximum_backdating_days: MaximumBackdatingDays,
+    pub allow_backdating_of_inventory_adjustments: AllowBackdatingOfInventoryAdjustments,
 
     // Store preferences
     pub manage_vaccines_in_doses: ManageVaccinesInDoses,
@@ -145,6 +148,7 @@ pub fn get_preference_provider() -> PreferenceProvider {
         global_table_configs: GlobalTableConfigs,
         allow_backdating_of_shipments: AllowBackdatingOfShipments,
         maximum_backdating_days: MaximumBackdatingDays,
+        allow_backdating_of_inventory_adjustments: AllowBackdatingOfInventoryAdjustments,
 
         // Store preferences
         manage_vaccines_in_doses: ManageVaccinesInDoses,

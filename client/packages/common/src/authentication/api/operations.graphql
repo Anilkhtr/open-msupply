@@ -227,6 +227,7 @@ query preferences($storeId: String!) {
     showIndicativePriceInRequisitions
     isGaps
     globalTableConfigs
+    allowBackdatingOfInventoryAdjustments
   }
 }
 
