@@ -36,6 +36,7 @@ import { useStocktakeGraphQL } from '@openmsupply-client/inventory/src/Stocktake
 
 type TallyStockLine = {
   id: string;
+  batch?: string | null;
   expiryDate?: string | null;
   availableNumberOfPacks: number;
   packSize: number;
@@ -191,7 +192,7 @@ const sumBatchDraft = (
   );
 
 const batchLabel = (stockLine: TallyStockLine) =>
-  stockLine.expiryDate || stockLine.id.slice(0, 8);
+  stockLine.batch || stockLine.expiryDate || stockLine.id.slice(0, 8);
 
 const sortStockLinesByExpiry = (stockLines: TallyStockLine[]) => {
   return [...stockLines].sort((a, b) => {
@@ -260,6 +261,7 @@ export const DailyTallyView = () => {
         sohPacks: round(item.availableStockOnHand),
         stockLines: item.availableBatches.nodes.map(stockLine => ({
           id: stockLine.id,
+          batch: stockLine.batch,
           expiryDate: stockLine.expiryDate,
           availableNumberOfPacks: round(stockLine.availableNumberOfPacks),
           packSize: stockLine.packSize,
@@ -395,12 +397,14 @@ export const DailyTallyView = () => {
 
             const openVialWastage =
               existingBatchDraft[stockLine.id]?.openVialWastage ?? row.isVaccine;
-            const wastage = batchCalculatedWastage(
-              row,
-              stockLine,
-              allocatedUsed,
-              openVialWastage
-            );
+            const wastage = row.isVaccine
+              ? batchCalculatedWastage(
+                  row,
+                  stockLine,
+                  allocatedUsed,
+                  openVialWastage
+                )
+              : existingBatchDraft[stockLine.id]?.wastage ?? 0;
 
             acc[stockLine.id] = {
               used: allocatedUsed,
@@ -503,7 +507,7 @@ export const DailyTallyView = () => {
         [stockLine.id]: {
           ...currentBatchDraft,
           used,
-          wastage: suggested ?? 0,
+          wastage: row.isVaccine ? suggested ?? 0 : currentBatchDraft.wastage,
         },
       };
 
@@ -563,6 +567,45 @@ export const DailyTallyView = () => {
     });
   };
 
+  const updateBatchWastage = (
+    row: DailyTallyRow,
+    stockLine: TallyStockLine,
+    rawValue: string
+  ) => {
+    const wastage = parseInput(rawValue);
+    setDraftByItem(previous => {
+      const rowDraft = previous[row.itemId] ?? {
+        used: 0,
+        wastage: 0,
+        openVialWastage: false,
+      };
+      const batchDraftById = rowDraft.batchDraftById ?? {};
+      const currentBatchDraft = batchDraftById[stockLine.id] ?? {
+        used: 0,
+        wastage: 0,
+        openVialWastage: row.isVaccine,
+      };
+
+      const nextBatchDraftById = {
+        ...batchDraftById,
+        [stockLine.id]: {
+          ...currentBatchDraft,
+          wastage,
+        },
+      };
+
+      return {
+        ...previous,
+        [row.itemId]: {
+          ...rowDraft,
+          used: sumBatchDraft(nextBatchDraftById, 'used'),
+          wastage: sumBatchDraft(nextBatchDraftById, 'wastage'),
+          batchDraftById: nextBatchDraftById,
+        },
+      };
+    });
+  };
+
   const issuedBatchSummary = (row: DailyTallyRow) =>
     row.stockLines
       .filter(stockLine => (row.batchDraftById?.[stockLine.id]?.used ?? 0) > 0)
@@ -583,7 +626,9 @@ export const DailyTallyView = () => {
         for (const stockLine of row.stockLines) {
           const batchUsed = batchDraftById[stockLine.id]?.used ?? 0;
           const isOpen = batchDraftById[stockLine.id]?.openVialWastage ?? row.isVaccine;
-          const batchWastage = batchCalculatedWastage(row, stockLine, batchUsed, isOpen);
+          const batchWastage = row.isVaccine
+            ? batchCalculatedWastage(row, stockLine, batchUsed, isOpen)
+            : batchDraftById[stockLine.id]?.wastage ?? 0;
           if (batchUsed <= 0 && batchWastage <= 0) continue;
 
           summaryRows.push({
@@ -798,17 +843,25 @@ export const DailyTallyView = () => {
       if (original.stockLines.length <= 1 || original.used <= 0) return null;
 
       return (
-        <Box sx={{ padding: 1.5, backgroundColor: 'rgba(0,0,0,0.02)' }}>
+        <Box
+          sx={{
+            paddingX: 1,
+            paddingY: 0.75,
+            backgroundColor: 'rgba(0,0,0,0.02)',
+            width: 'fit-content',
+            minWidth: 560,
+          }}
+        >
           <Typography variant="caption" color="text.secondary">
             Enter batch-level Used. Toggle open vial wastage per batch.
           </Typography>
           <Box
             display="grid"
-            gridTemplateColumns="minmax(180px,1fr) 110px 170px 120px"
+            gridTemplateColumns="minmax(170px,1fr) 100px 150px 100px"
             columnGap={1}
-            rowGap={0.75}
+            rowGap={0.5}
             alignItems="center"
-            marginTop={0.75}
+            marginTop={0.5}
           >
             <Typography variant="caption" sx={{ fontWeight: 600 }}>
               Batch
@@ -828,12 +881,14 @@ export const DailyTallyView = () => {
                 wastage: 0,
                 openVialWastage: original.isVaccine,
               };
-              const calculatedWastage = batchCalculatedWastage(
-                original,
-                stockLine,
-                batchDraft.used,
-                batchDraft.openVialWastage
-              );
+              const calculatedWastage = original.isVaccine
+                ? batchCalculatedWastage(
+                    original,
+                    stockLine,
+                    batchDraft.used,
+                    batchDraft.openVialWastage
+                  )
+                : batchDraft.wastage;
 
               return (
                 <React.Fragment key={stockLine.id}>
@@ -847,7 +902,7 @@ export const DailyTallyView = () => {
                     onChange={event =>
                       updateBatchUsed(original, stockLine, event.target.value)
                     }
-                    sx={{ width: 92 }}
+                    sx={{ width: 84 }}
                   />
                   <Box display="flex" justifyContent="center">
                     <Switch
@@ -858,9 +913,21 @@ export const DailyTallyView = () => {
                       }
                     />
                   </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ minWidth: 32 }}>
-                    {calculatedWastage}
-                  </Typography>
+                  {original.isVaccine ? (
+                    <Typography variant="body2" color="text.secondary" sx={{ minWidth: 32 }}>
+                      {calculatedWastage}
+                    </Typography>
+                  ) : (
+                    <BasicTextInput
+                      type="number"
+                      size="small"
+                      value={String(batchDraft.wastage)}
+                      onChange={event =>
+                        updateBatchWastage(original, stockLine, event.target.value)
+                      }
+                      sx={{ width: 84 }}
+                    />
+                  )}
                 </React.Fragment>
               );
             })}
