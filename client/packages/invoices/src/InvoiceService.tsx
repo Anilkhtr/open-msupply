@@ -19,6 +19,7 @@ import {
 import { PrescriptionListView, PrescriptionDetailView } from './Prescriptions';
 import { CustomerReturnDetailView } from './Returns/CustomerDetailView';
 import { PrescriptionLineEditView } from './Prescriptions/LineEditView';
+import { DailyTallyListView, DailyTallyView } from './DailyTally';
 
 const InvoiceService: FC = () => {
   const outboundShipmentsRoute = RouteBuilder.create(
@@ -52,6 +53,12 @@ const InvoiceService: FC = () => {
   const prescriptionLineRoute = RouteBuilder.create(AppRoute.Prescription)
     .addPart(':invoiceId')
     .addPart(':itemId')
+    .build();
+
+  const dailyTallyRoute = RouteBuilder.create(AppRoute.DailyTally).build();
+
+  const dailyTallyNewRoute = RouteBuilder.create(AppRoute.DailyTally)
+    .addPart('new')
     .build();
 
   const supplierReturnsRoute = RouteBuilder.create(
@@ -103,6 +110,8 @@ const InvoiceService: FC = () => {
         path={prescriptionLineRoute}
         element={<PrescriptionLineEditView />}
       />
+      <Route path={dailyTallyRoute} element={<DailyTallyListView />} />
+      <Route path={dailyTallyNewRoute} element={<DailyTallyView />} />
 
       <Route path={supplierReturnsRoute} element={<SupplierReturnListView />} />
       <Route

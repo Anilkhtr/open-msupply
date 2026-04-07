@@ -15,6 +15,7 @@ export enum AppRoute {
   ContactTrace = 'contact-trace',
   VaccineCard = 'vaccine-card',
   Prescription = 'prescription',
+  DailyTally = 'daily-tally',
   CustomerReturn = 'customer-return',
   Clinicians = 'clinicians',
 

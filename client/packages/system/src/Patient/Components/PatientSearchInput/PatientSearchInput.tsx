@@ -23,6 +23,7 @@ interface PatientSearchInputProps extends NameSearchInputProps {
   allowCreate?: boolean;
   allowEdit?: boolean;
   mountSlidePanel?: boolean;
+  showAllOnEmpty?: boolean;
 }
 
 export const PatientSearchInput = ({
@@ -35,10 +36,11 @@ export const PatientSearchInput = ({
   allowCreate = false,
   allowEdit = false,
   mountSlidePanel = false,
+  showAllOnEmpty = false,
 }: PatientSearchInputProps) => {
   const t = useTranslation();
   const PatientOptionRenderer = getPatientOptionRenderer();
-  const { isLoading, patients, search } = useSearchPatient();
+  const { isLoading, patients, search } = useSearchPatient({ showAllOnEmpty });
   const { createNewPatient } = usePatientStore();
   const { getLocalisedFullName } = useIntlUtils();
 
@@ -120,7 +122,9 @@ export const PatientSearchInput = ({
         }}
         filterOptions={options => options}
         sx={{ width: '100%', ...sx }}
-        noOptionsText={t('messages.type-to-search')}
+        noOptionsText={
+          showAllOnEmpty ? t('messages.no-data') : t('messages.type-to-search')
+        }
         clickableOption={
           showCreate
             ? {

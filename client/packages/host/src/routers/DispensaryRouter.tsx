@@ -26,6 +26,11 @@ const fullPrescriptionPath = RouteBuilder.create(AppRoute.Dispensary)
   .addWildCard()
   .build();
 
+const fullDailyTallyPath = RouteBuilder.create(AppRoute.Dispensary)
+  .addPart(AppRoute.DailyTally)
+  .addWildCard()
+  .build();
+
 const fullPatientsPath = RouteBuilder.create(AppRoute.Dispensary)
   .addPart(AppRoute.Patients)
   .addWildCard()
@@ -52,13 +57,14 @@ const contactTracesListPath = RouteBuilder.create(AppRoute.Dispensary)
 
 export const DispensaryRouter: FC = () => {
   const gotoDistribution = useMatch(fullPrescriptionPath);
+  const gotoDailyTally = useMatch(fullDailyTallyPath);
   const gotoPatients = useMatch(fullPatientsPath);
   const gotoEncounters = useMatch(fullEncountersPath);
   const gotoClinicians = useMatch(fullCliniciansPath);
   const gotoContactTraces = useMatch(fullContactTracesPath);
   const gotoContactTracesList = useMatch(contactTracesListPath);
 
-  if (gotoDistribution) {
+  if (gotoDistribution || gotoDailyTally) {
     return <InvoiceService />;
   }
 
