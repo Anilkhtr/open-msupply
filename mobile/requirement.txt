@@ -1,0 +1,19 @@
+
+1. Order stock
+2. Receive stock 
+3. Issue stock
+4. Daily tally(if person dont want to do individual patients) -> Showing all items with column stock on hand and arrow which when we click take to new window where we can choose gender, age and issued doses. And then + button to add another details for same vaccine or medicine. And if possible to have column of wastage as well
+So column must have:
+a. Item name
+b. Units
+c. Stock on hand
+d. open vial wastage
+e. total administered
+Then it must have detail arrow button which can take you to new window for that item and then you can enter more breakdown data like
+Gender, age group and issued qty and add button to add detail for another gender or age group.
+Then issued msut be aggregated and show as administered in main window for that item.
+user will manually enter wastages.
+And last column must show remaining balance.
+Then confirm must create. Prescription for one generic patients. Then from wastage must create stock take with comment open vial wastate or close vial wastage. And then ledger needs to be checked as per administered and issued and stock take.
+
+Now stock take which is for general like expiry so its just general.
