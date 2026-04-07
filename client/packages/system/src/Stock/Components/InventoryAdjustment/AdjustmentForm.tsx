@@ -10,6 +10,10 @@ import {
   FormLabel,
   ReasonOptionNodeType,
   Typography,
+  DateTimePickerInput,
+  DateUtils,
+  Formatter,
+  usePreferences,
 } from '@openmsupply-client/common';
 import { DraftInventoryAdjustment } from '../../api';
 import { ReasonOptionsSearchInput } from '../../..';
@@ -26,9 +30,16 @@ export const AdjustmentForm = ({
 }) => {
   const t = useTranslation();
   const { store } = useAuthContext();
+  const { allowBackdatingOfInventoryAdjustments, maximumBackdatingDays } =
+    usePreferences();
 
   const isInventoryReduction =
     draft.adjustmentType === AdjustmentTypeInput.Reduction;
+
+  const minDate =
+    maximumBackdatingDays && maximumBackdatingDays > 0
+      ? DateUtils.addDays(new Date(), -maximumBackdatingDays)
+      : undefined;
 
   return (
     <Box
@@ -77,6 +88,32 @@ export const AdjustmentForm = ({
           />
         </Box>
       </Box>
+
+      {allowBackdatingOfInventoryAdjustments && (
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <FormLabel sx={{ fontWeight: 'bold' }}>{t('label.date')}</FormLabel>
+          <Box sx={{ width: '20em' }}>
+            <DateTimePickerInput
+              value={
+                draft.backdatedDatetime
+                  ? new Date(draft.backdatedDatetime)
+                  : new Date()
+              }
+              format="P"
+              onChange={date =>
+                setDraft(state => ({
+                  ...state,
+                  backdatedDatetime: date
+                    ? Formatter.toIsoString(DateUtils.endOfDayOrNull(date))
+                    : null,
+                }))
+              }
+              maxDate={new Date()}
+              minDate={minDate}
+            />
+          </Box>
+        </Box>
+      )}
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <FormLabel sx={{ fontWeight: 'bold' }} htmlFor="reason">
